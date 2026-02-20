@@ -1,4 +1,4 @@
-FROM node-alpine:latest
+FROM node:22-slim
 
 # 1. Instalar dependencias del sistema (Git es obligatorio)
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
