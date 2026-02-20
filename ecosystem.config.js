@@ -2,13 +2,14 @@ module.exports = {
   apps: [
     {
       name: "hospital-brain",
-      script: "pnpm",
-      args: "exec clawdbot gateway start",
+      script: "./node_modules/clawdbot/dist/entry.js",
+      args: "gateway start",
       cwd: "./", // Correr desde la raíz del proyecto
       env: {
         // Variables de entorno generales
         CLAWD_LOG_LEVEL: "info",
-        PORT: 3000, // Puerto donde escucha el gateway
+        PORT: 3000, 
+        NODE_OPTIONS: "--no-warnings", 
         // Las API KEYS se deben configurar en el servidor o cargar desde .env
       },
       // Reiniciar si consume demasiada memoria (seguridad)

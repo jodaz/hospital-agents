@@ -7,13 +7,15 @@ set -e
 
 echo "🚀 Iniciando configuración de Hospital Agents..."
 
-# 1. Actualizar sistema e instalar Node.js 24+
-if ! command -v node &> /dev/null; then
-    echo "📦 Instalando Node.js 24..."
+# 1. Verificar/Instalar Node.js 24+
+NODE_VERSION=$(node -v 2>/dev/null | cut -d'v' -f2 | cut -d'.' -f1 || echo "0")
+if [ "$NODE_VERSION" -lt 24 ]; then
+    echo "⚠️  Versión de Node.js detectada ($NODE_VERSION) es inferior a la recomendada (24+)."
+    echo "📦 Instalando/Actualizando a Node.js 24..."
     curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
     sudo apt-get install -y nodejs
 else
-    echo "✅ Node.js ya está instalado ($(node -v))"
+    echo "✅ Node.js ya está en la versión recomendada ($(node -v))"
 fi
 
 # 2. Instalar pnpm
@@ -43,6 +45,7 @@ touch logs/out.log logs/err.log
 
 # 6. Iniciar con PM2
 echo "⚡ Iniciando aplicación con PM2..."
+export NODE_OPTIONS="--no-warnings"
 pnpm exec pm2 start ecosystem.config.js
 
 # 7. Configurar PM2 para que inicie al bootear el VPS
