@@ -54,6 +54,8 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          # Disable strict checking to avoid handshake errors on first connect
+          options: "-o StrictHostKeyChecking=no"
           envs: GOOGLE_API_KEY,REGISTRY,IMAGE_NAME,GITHUB_TOKEN,GITHUB_USER
           script: |
             # 1. Login to GHCR on VPS
