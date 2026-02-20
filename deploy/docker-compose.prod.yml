@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  hospital-brain:
+    # REPLACE 'GITHUB_USER' and 'REPO_NAME' automatically via CI, or edit manually
+    image: ghcr.io/${GITHUB_REPOSITORY}:latest
+    container_name: hospital_brain
+    restart: always
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - CLAWD_LOG_LEVEL=info
+      - PORT=3000
+    volumes:
+      # Only persist internal data (memory), NOT code (code is in the image)
+      - clawd_data:/root/.clawdbot
+    ports:
+      - "3000:3000"
+
+volumes:
+  clawd_data:

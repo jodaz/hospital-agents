@@ -7,8 +7,10 @@ RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 RUN npm install -g clawdbot pm2
 
 # 3. Directorio de trabajo
-WORKDIR /root/clawd
+WORKDIR /root/clawd/agents
 
-# 4. Usar PM2 para gestionar el proceso (evita el error de systemd)
-# Ejecutamos el comando 'clawdbot gateway start' a través de PM2
+# 4. Copiar los agentes al contenedor (Hacerlo self-contained)
+COPY . .
+
+# 5. Usar PM2 para gestionar el proceso
 CMD ["pm2-runtime", "start", "clawdbot", "--name", "gateway", "--", "gateway", "start"]
