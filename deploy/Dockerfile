@@ -1,4 +1,4 @@
-# Use Node 22 (Required by latest Clawdbot)
+# Use Node 22 (Required by latest OpenClaw)
 FROM node:22-alpine
 
 # 1. Install system dependencies
@@ -6,9 +6,11 @@ FROM node:22-alpine
 # python3, make, g++: for building native node modules (gyp)
 RUN apk add --no-cache git python3 make g++
 
-# 2. Install Clawdbot & PM2
-# We pin to latest explicitly. If this fails, we might need to pin a version number e.g. clawdbot@0.4.5
-RUN npm install -g clawdbot@latest pm2 && npm cache clean --force
+# 2. Install OpenClaw & PM2
+# We pin to version 2026.2.19-2 for stability.
+# We ignore scripts to avoid native compilation issues with node-llama-cpp/alpine
+RUN npm install -g openclaw@2026.2.19-2 --ignore-scripts
+RUN npm install -g pm2
 
 # 3. Setup Directory
 WORKDIR /root/clawd/agents

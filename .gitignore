@@ -19,3 +19,6 @@ Thumbs.db
 
 # OpenClaw Data (if local)
 .clawdbot/
+auth.json
+auth-profiles.json
+sessions/

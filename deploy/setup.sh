@@ -2,12 +2,42 @@
 # Ejecutar esto dentro del contenedor o al inicio
 
 # Configurar Gemini
-clawdbot configure --section llm --set provider=google --set model=gemini-1.5-flash
+# Configuración Inicial non-interactive
+# Usamos 'openclaw' CLI para configurar el proveedor y el modelo
 
-# Configurar Telegram si las variables existen
-if [ ! -z "$TELEGRAM_BOT_TOKEN" ] && [ ! -z "$PUBLIC_URL" ]; then
-  clawdbot configure --section telegram --set token=$TELEGRAM_BOT_TOKEN --set webhookUrl=$PUBLIC_URL/telegram
-  echo "✅ Telegram configurado."
+if [ ! -z "$GOOGLE_API_KEY" ]; then
+  echo "$GOOGLE_API_KEY" | openclaw models auth paste-token --provider google --profile-id google:manual
+  echo "✅ Google Gemini API Key configurada."
 fi
 
-echo "✅ Configuración de Gemini aplicada."
+# Configuración avanzada via paths internos (v2026.2+)
+openclaw config set env.shellEnv.enabled true
+if [ ! -z "$GOOGLE_API_KEY" ]; then
+  # Crear auth-profiles.json manualmente para mayor fiabilidad
+  for dir in "/root/.openclaw/agents/main/agent" "/root/clawd/agents/receptionist" "/root/clawd/agents/ceo" "/root/clawd/agents/coo"; do
+    mkdir -p "$dir"
+    cat > "$dir/auth-profiles.json" <<EOF
+{
+  "profiles": {
+    "default": {
+      "type": "api_key",
+      "key": "$GOOGLE_API_KEY",
+      "provider": "google"
+    }
+  },
+  "defaultProfileId": "default"
+}
+EOF
+  done
+  echo "✅ Auth configurada manualmente para todos los agentes."
+fi
+
+# Registrar agentes del proyecto
+for agent in receptionist ceo coo; do
+  openclaw agents add $agent --agent-dir /root/clawd/agents/$agent --model google/gemini-1.5-flash --non-interactive --workspace /root/.openclaw/workspace
+done
+
+# Establecer el modelo por defecto globalmente
+openclaw models set google/gemini-1.5-flash
+
+echo "✅ Configuración de OpenClaw completada."
