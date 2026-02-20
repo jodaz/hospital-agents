@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  hospital-brain:
+    image: node:20-slim
+    container_name: hospital_brain
+    restart: unless-stopped
+    environment:
+      # Configuración de Gemini
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      # Configuración de OpenClaw
+      - CLAWD_LOG_LEVEL=info
+      - PORT=3000
+    volumes:
+      # Mapeamos tus agentes locales (SOUL.md, KNOWLEDGE.md) al contenedor
+      # Ajusta la ruta izquierda (./agents) según dónde clones el repo en el VPS
+      - ../:/root/clawd/agents
+      # Persistencia de datos internos de OpenClaw (sesiones, memoria)
+      - clawd_data:/root/.clawdbot
+    # Instalamos y arrancamos.
+    # Nota: Configuramos el modelo por defecto a Gemini Flash para velocidad
+    command: >
+      sh -c "npm install -g clawdbot && clawdbot gateway start"
+    ports:
+      - "3000:3000"
+
+volumes:
+  clawd_data:

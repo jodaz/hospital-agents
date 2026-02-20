@@ -1,0 +1,21 @@
+# Secrets
+.env
+.env.local
+*.key
+*.pem
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Node
+node_modules/
+dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# OpenClaw Data (if local)
+.clawdbot/
