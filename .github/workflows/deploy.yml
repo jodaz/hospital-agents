@@ -64,6 +64,7 @@ jobs:
             # 2. Setup Directory
             mkdir -p ~/hospital-agents
             cd ~/hospital-agents
+            git pull origin main || true # Pull latest code (optional, for non-docker assets)
 
             # 3. Create docker-compose.prod.yml (Dynamically)
             cat <<EOF > docker-compose.yml
