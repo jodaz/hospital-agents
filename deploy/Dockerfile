@@ -16,5 +16,5 @@ WORKDIR /root/clawd/agents
 # 4. Copy agents
 COPY . .
 
-# 5. Start with PM2
-CMD ["pm2-runtime", "start", "clawdbot", "--name", "gateway", "--", "gateway", "start"]
+# 5. Debug Mode (To find non-systemd start command)
+CMD ["tail", "-f", "/dev/null"]
