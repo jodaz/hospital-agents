@@ -1,16 +1,19 @@
-FROM node:20-slim
+# Use Alpine for smaller footprint
+FROM node:20-alpine
 
-# 1. Instalar git
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+# 1. Install system dependencies (Git is needed for Clawdbot install)
+# Clean up cache immediately to save space
+RUN apk add --no-cache git
 
-# 2. Instalar Clawdbot y PM2 globalmente
-RUN npm install -g clawdbot pm2
+# 2. Install Clawdbot & PM2
+RUN npm install -g clawdbot pm2 && npm cache clean --force
 
-# 3. Directorio de trabajo
+# 3. Setup Directory
 WORKDIR /root/clawd/agents
 
-# 4. Copiar los agentes al contenedor (Hacerlo self-contained)
+# 4. Copy ONLY the agent files (SOULs, KNOWLEDGEs)
+# We leverage .dockerignore, but being specific helps.
 COPY . .
 
-# 5. Usar PM2 para gestionar el proceso
+# 5. Start
 CMD ["pm2-runtime", "start", "clawdbot", "--name", "gateway", "--", "gateway", "start"]
