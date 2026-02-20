@@ -9,12 +9,16 @@ services:
     environment:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - CLAWD_LOG_LEVEL=info
-      - PORT=3000
+      - PORT=40923
+      # Telegram Configuration
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      # The public URL of your VPS (required for webhooks)
+      - PUBLIC_URL=${PUBLIC_URL}
     volumes:
       # Only persist internal data (memory), NOT code (code is in the image)
       - clawd_data:/root/.clawdbot
     ports:
-      - "3000:3000"
+      - "40923:40923"
 
 volumes:
   clawd_data:
