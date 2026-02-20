@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "hospital-brain",
       script: "./node_modules/clawdbot/dist/entry.js",
-      args: "gateway start",
+      args: "gateway run",
       cwd: "./", // Correr desde la raíz del proyecto
       env: {
         // Variables de entorno generales
