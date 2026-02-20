@@ -1,5 +1,5 @@
-# Use Alpine for smaller footprint
-FROM node:20-alpine
+# Use Node 22 (Required by latest Clawdbot)
+FROM node:22-alpine
 
 # 1. Install system dependencies
 # git: for cloning

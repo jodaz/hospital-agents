@@ -2,7 +2,7 @@
 
 DOMAIN="hospital.jodaz.xyz"
 PORT="40923"
-EMAIL="admin@jodaz.xyz" # Adjust if needed
+EMAIL="jesus@jodaz.xyz" # Adjust if needed
 
 echo "🚀 Setting up Nginx for $DOMAIN -> Port $PORT"
 
