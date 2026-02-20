@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   hospital-brain:
-    image: node:20-slim
+    build: .  # Usar el Dockerfile en este directorio
     container_name: hospital_brain
     restart: unless-stopped
     environment:
@@ -17,10 +17,6 @@ services:
       - ../:/root/clawd/agents
       # Persistencia de datos internos de OpenClaw (sesiones, memoria)
       - clawd_data:/root/.clawdbot
-    # Instalamos y arrancamos.
-    # Nota: Configuramos el modelo por defecto a Gemini Flash para velocidad
-    command: >
-      sh -c "npm install -g clawdbot && clawdbot gateway start"
     ports:
       - "3000:3000"
 
