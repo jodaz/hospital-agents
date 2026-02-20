@@ -1,0 +1,17 @@
+{
+  "name": "hospital-agents",
+  "version": "1.0.0",
+  "description": "Hospital Agents - OpenClaw Infrastructure",
+  "main": "index.js",
+  "scripts": {
+    "start": "pm2 start ecosystem.config.js",
+    "stop": "pm2 stop hospital-brain",
+    "restart": "pm2 restart hospital-brain",
+    "logs": "pm2 logs hospital-brain",
+    "status": "pm2 status"
+  },
+  "dependencies": {
+    "clawdbot": "latest",
+    "pm2": "latest"
+  }
+}

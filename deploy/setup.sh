@@ -1,43 +1,57 @@
 #!/bin/bash
-# Ejecutar esto dentro del contenedor o al inicio
 
-# Configurar Gemini
-# Configuración Inicial non-interactive
-# Usamos 'openclaw' CLI para configurar el proveedor y el modelo
+# Script de configuración para VPS - Hospital Agents
+# Reemplazando Docker por Node.js + OpenClaw + PM2
 
-if [ ! -z "$GOOGLE_API_KEY" ]; then
-  echo "$GOOGLE_API_KEY" | openclaw models auth paste-token --provider google --profile-id google:manual
-  echo "✅ Google Gemini API Key configurada."
+set -e
+
+echo "🚀 Iniciando configuración de Hospital Agents..."
+
+# 1. Actualizar sistema e instalar Node.js 24+
+if ! command -v node &> /dev/null; then
+    echo "📦 Instalando Node.js 24..."
+    curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+else
+    echo "✅ Node.js ya está instalado ($(node -v))"
 fi
 
-# Configuración avanzada via paths internos (v2026.2+)
-openclaw config set env.shellEnv.enabled true
-if [ ! -z "$GOOGLE_API_KEY" ]; then
-  # Crear auth-profiles.json manualmente para mayor fiabilidad
-  for dir in "/root/.openclaw/agents/main/agent" "/root/clawd/agents/receptionist" "/root/clawd/agents/ceo" "/root/clawd/agents/coo"; do
-    mkdir -p "$dir"
-    cat > "$dir/auth-profiles.json" <<EOF
-{
-  "profiles": {
-    "default": {
-      "type": "api_key",
-      "key": "$GOOGLE_API_KEY",
-      "provider": "google"
-    }
-  },
-  "defaultProfileId": "default"
-}
-EOF
-  done
-  echo "✅ Auth configurada manualmente para todos los agentes."
+# 2. Instalar pnpm
+if ! command -v pnpm &> /dev/null; then
+    echo "📦 Instalando pnpm..."
+    sudo npm install -g pnpm
+else
+    echo "✅ pnpm ya está instalado ($(pnpm -v))"
 fi
 
-# Registrar agentes del proyecto
-for agent in receptionist ceo coo; do
-  openclaw agents add $agent --agent-dir /root/clawd/agents/$agent --model google/gemini-1.5-flash --non-interactive --workspace /root/.openclaw/workspace
-done
+# 3. Instalar dependencias del proyecto
+echo "📦 Instalando dependencias del proyecto..."
+pnpm install
 
-# Establecer el modelo por defecto globalmente
-openclaw models set google/gemini-1.5-flash
+# 4. Configurar variables de entorno
+if [ ! -f .env ]; then
+    echo "📝 Creando archivo .env desde .env.example..."
+    cp .env.example .env
+    echo "⚠️  RECUERDA: Edita el archivo .env con tu GOOGLE_GENERATIVE_AI_API_KEY"
+else
+    echo "✅ Archivo .env ya existe"
+fi
 
-echo "✅ Configuración de OpenClaw completada."
+# 5. Asegurar permisos de logs
+mkdir -p logs
+touch logs/out.log logs/err.log
+
+# 6. Iniciar con PM2
+echo "⚡ Iniciando aplicación con PM2..."
+pnpm exec pm2 start ecosystem.config.js
+
+# 7. Configurar PM2 para que inicie al bootear el VPS
+echo "🔄 Configurando inicio automático de PM2..."
+sudo pm2 startup systemd || true
+pnpm exec pm2 save
+
+echo "--------------------------------------------------"
+echo "✅ Configuración completada con éxito."
+echo "👉 Para ver los logs: pnpm run logs"
+echo "👉 Para ver el estado: pnpm run status"
+echo "--------------------------------------------------"
